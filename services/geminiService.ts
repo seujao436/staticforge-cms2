@@ -1,11 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 
-const getAiClient = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY });
-};
-
 export const generateHtmlContent = async (userPrompt: string): Promise<string> => {
-  const ai = getAiClient();
+  // API Key must be obtained exclusively from process.env.API_KEY as per guidelines.
+  // We assume process.env.API_KEY is pre-configured and available.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `You are an expert Frontend Engineer and UI Designer. 
   Your task is to generate a single, complete, self-contained HTML5 file based on the user's request.
@@ -41,7 +39,8 @@ export const generateHtmlContent = async (userPrompt: string): Promise<string> =
 };
 
 export const improveHtmlContent = async (currentHtml: string, improvementInstruction: string): Promise<string> => {
-  const ai = getAiClient();
+  // API Key must be obtained exclusively from process.env.API_KEY as per guidelines.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const prompt = `
   Current HTML:
