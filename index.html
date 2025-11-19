@@ -21,22 +21,47 @@
         }
       }
     </script>
-  <script type="importmap">
+    <!-- FIXED: Using public ESM.sh CDN instead of internal aistudiocdn.com -->
+    <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@0.1.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.378.0",
+    "uuid": "https://esm.sh/uuid@9.0.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
-    "vite": "https://aistudiocdn.com/vite@^7.2.2"
+    "vite": "https://aistudiocdn.com/vite@^7.2.2",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
   }
 }
 </script>
-</head>
+    <style>
+      /* Minimal error UI just in case React fails to mount */
+      #error-display { display: none; padding: 20px; color: #ff6b6b; background: #1a1a1a; font-family: monospace; height: 100vh; }
+    </style>
+  </head>
   <body class="bg-gray-950 text-gray-100 antialiased overflow-hidden">
     <div id="root"></div>
+    
+    <div id="error-display">
+      <h2>Application Failed to Start</h2>
+      <p>Please check your console logs (F12).</p>
+      <pre id="error-message"></pre>
+    </div>
+
+    <script>
+      window.addEventListener('error', function(event) {
+        const root = document.getElementById('root');
+        // If root is empty after an error, show the fallback UI
+        if (root && root.innerHTML.trim() === '') {
+          document.getElementById('error-display').style.display = 'block';
+          document.getElementById('error-message').textContent = event.message || 'Unknown error occurred';
+        }
+      });
+    </script>
+    
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

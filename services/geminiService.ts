@@ -1,9 +1,31 @@
 import { GoogleGenAI } from "@google/genai";
 
+// Helper to safely get the API Key in different environments
+const getApiKey = () => {
+  // 1. Try standard Vite env var (Render, Vercel, Local)
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GOOGLE_API_KEY) {
+    // @ts-ignore
+    return import.meta.env.VITE_GOOGLE_API_KEY;
+  }
+
+  // 2. Try process.env (Google AI Studio internal environment)
+  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+    return process.env.API_KEY;
+  }
+
+  return '';
+};
+
 export const generateHtmlContent = async (userPrompt: string): Promise<string> => {
-  // API Key must be obtained exclusively from process.env.API_KEY as per guidelines.
-  // We assume process.env.API_KEY is pre-configured and available.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    console.error("API Key missing. Set VITE_GOOGLE_API_KEY in your environment.");
+    throw new Error("API Key is missing. Please configure VITE_GOOGLE_API_KEY.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const systemInstruction = `You are an expert Frontend Engineer and UI Designer. 
   Your task is to generate a single, complete, self-contained HTML5 file based on the user's request.
@@ -22,7 +44,7 @@ export const generateHtmlContent = async (userPrompt: string): Promise<string> =
       contents: userPrompt,
       config: {
         systemInstruction: systemInstruction,
-        thinkingConfig: { thinkingBudget: 0 }, // Disable thinking for faster layout generation
+        thinkingConfig: { thinkingBudget: 0 }, 
       },
     });
 
@@ -39,8 +61,13 @@ export const generateHtmlContent = async (userPrompt: string): Promise<string> =
 };
 
 export const improveHtmlContent = async (currentHtml: string, improvementInstruction: string): Promise<string> => {
-  // API Key must be obtained exclusively from process.env.API_KEY as per guidelines.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
   Current HTML:
